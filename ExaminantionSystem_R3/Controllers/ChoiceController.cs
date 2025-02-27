@@ -1,5 +1,6 @@
 ﻿using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Repositories;
+using ExaminantionSystem_R3.Services;
 using ExaminationSystem.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,42 +11,41 @@ namespace ExaminantionSystem_R3.Controllers
     [Route("[controller]/[action]")]
     public class ChoiceController : ControllerBase
     {
-        ChoiceRepository _choiceRepository;
-        QuestionRepository _questionRepository;
-        public ChoiceController(ChoiceRepository choiceRepository, QuestionRepository questionRepository)
+        ChoiceService _choiceService;
+        
+        QuestionService _questionService;
+        public ChoiceController(ChoiceService choiceService, QuestionService questionService)
         {
-            _choiceRepository = choiceRepository;
-            _questionRepository = questionRepository;
+            _choiceService = choiceService;
+            _questionService = questionService;
         }
         [HttpPost]
         public IActionResult Add(Choice choice)
         {
-            Question question = _questionRepository.GetById(choice.QuestionId).Include(x => x.Choices).FirstOrDefault();
 
-            question.Choices.Add(choice);
-            _questionRepository.Update(question);
-            return Ok(true);
+            return Ok(_choiceService.Add(choice));
+            
         }
         [HttpPut]
         public async Task<IActionResult> EditAsync(Choice choice)
         {
-            await _choiceRepository.UpdateAsync(choice)
-                .ConfigureAwait(true);
-            return Ok(true);
+            return Ok( await _choiceService.UpdateAsync(choice)
+                .ConfigureAwait(true));
+            
         }
       
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
-            var choice = await _choiceRepository.DeleteAsync(id)
+            bool isDeleted = await _choiceService.DeleteAsync(id)
                 .ConfigureAwait(true);
 
-            return Ok(true);
+            return Ok(isDeleted);
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(_choiceRepository.GetAll());
+            return Ok(await _choiceService.GetAllAsync());
                 
         }
     }

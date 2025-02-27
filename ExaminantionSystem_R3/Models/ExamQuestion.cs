@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExaminantionSystem_R3.Models
 {
-    public class ExamQuestion
+    public class ExamQuestion : BaseModel
     {
         [ForeignKey("Exam")]
 
@@ -15,5 +15,6 @@ namespace ExaminantionSystem_R3.Models
         public int QuestionID { get; set; }
         public Question Question { get; set; }
         public int Grade { get; set; }
+        
     }
 }

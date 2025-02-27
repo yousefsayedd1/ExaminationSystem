@@ -1,5 +1,7 @@
-﻿using ExaminantionSystem_R3.Models;
+﻿using ExaminantionSystem_R3.DTOs.Questions;
+using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Repositories;
+using ExaminantionSystem_R3.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,33 +11,33 @@ namespace ExaminantionSystem_R3.Controllers
     [Route("[controller]/[action]")]
     public class QuestionController : ControllerBase
     {
-        QuestionRepository _questionRepository;
-        public QuestionController(QuestionRepository questionRepository)
+        QuestionService _questionService;
+        public QuestionController(QuestionService questionService)
         {
-            _questionRepository = questionRepository;
+            _questionService = questionService;
         }
 
         [HttpPost] 
-        public async Task<IActionResult> Add(Question question)
+        public async Task<IActionResult> Add(AddQuestionDTO question)
         {
-            await _questionRepository.AddAsync(question)
-                .ConfigureAwait(true);
+            //await _questionService.AddAsync(question)
+            //    .ConfigureAwait(true);
+            _questionService.Add(question); 
             return Ok(true);
         }
         [HttpPut]
         public async Task<IActionResult> Update(Question question)
         {
-            bool isUpdated = await _questionRepository.UpdateAsync(question)
+            bool isUpdated = await _questionService.UpdateAsync(question)
                     .ConfigureAwait(true);
             return Ok(isUpdated);
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _questionRepository.GetAll()
-                .Include(x => x.Choices)
-                .ToListAsync()
+            return Ok(await _questionService.GetAllWithIncludeAsync()
                 .ConfigureAwait(true));
+            
 
         }
         [HttpDelete]
@@ -43,13 +45,13 @@ namespace ExaminantionSystem_R3.Controllers
         {
             
             
-            bool isDeleted = await _questionRepository.DeleteAsync(id);
+            bool isDeleted = await _questionService.DeleteAsync(id);
             return Ok(isDeleted);
         }
         [HttpGet]
         public  IActionResult GetByID(int id)
         {
-            Question question = _questionRepository.GetByIdWithInclude(id);
+            Question question = _questionService.GetByIdWithInclude(id);
 
             return Ok(question);
         }

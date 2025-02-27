@@ -1,5 +1,6 @@
 ﻿using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Repositories;
+using ExaminantionSystem_R3.Services;
 using ExaminationSystem.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,16 +12,16 @@ namespace ExaminationSystem.Controllers
     [Route("[controller]/[action]")]
     public class CourseController : ControllerBase
     {
-        CourseRepository _courseRepository;
-        public CourseController(CourseRepository courseRepository )
+        CourseService _courseService;
+        public CourseController(CourseService courseService)
         {
-            _courseRepository = courseRepository;
+            _courseService = courseService;
         }
 
         [HttpPost]
         public async Task<IActionResult> Add(Course course)
         {
-            await _courseRepository.AddAsync(course)
+            await _courseService.AddAsync(course)
                 .ConfigureAwait(true);
 
             return Ok(true);
@@ -29,17 +30,13 @@ namespace ExaminationSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _courseRepository.GetAll()
-                .ToListAsync()
-                .ConfigureAwait(true));
+            return Ok(_courseService.GetAll());
         }
 
         [HttpGet]
         public async Task<IActionResult> GetByID(int id)
         {
-            Course crs = await _courseRepository.GetById(id).FirstOrDefaultAsync();
-                
-
+            Course crs = await _courseService.GetByIdAsync(id);
             return Ok(crs);
         }
 
@@ -47,12 +44,12 @@ namespace ExaminationSystem.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             
-            return Ok(await _courseRepository.DeleteAsync(id).ConfigureAwait(true));
+            return Ok(await _courseService.DeleteAsync(id));
         }
         [HttpPut]
         public async Task<IActionResult> Update(Course course)
         {   
-            return Ok(await _courseRepository.UpdateAsync(course,nameof(course.Name)).ConfigureAwait(true));
+            return Ok(await _courseService.UpdateAsync(course,nameof(course.Name)));
         }
     }
 }

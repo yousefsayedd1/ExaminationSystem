@@ -11,8 +11,12 @@ namespace ExaminantionSystem_R3.Models
         public int CourseID { get; set; }
         [JsonIgnore]
         public Course Course { get; set; }
-        //public Instructor Instructor { get; set; }
+        public Instructor Instructor { get; set; }
+        [JsonIgnore]
+
         public ICollection<ExamQuestion> ExamQuestions { get; set; }
+        [JsonIgnore]
+        public ICollection<StudentsExams> StudentsExams { get; set; }
 
     }
 }

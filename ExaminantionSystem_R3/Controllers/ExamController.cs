@@ -1,6 +1,8 @@
 ﻿using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Models.Enums;
 using ExaminantionSystem_R3.Repositories;
+using ExaminantionSystem_R3.Services;
+using ExaminationSystem.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -11,78 +13,73 @@ namespace ExaminantionSystem_R3.Controllers
     [Route("[controller]/[action]")]
     public class ExamController : ControllerBase
     {
-        ExamRepository _examRepository;
-        CourseRepository _courseRepository;
-        QuestionRepository _questionRepository;
-        public ExamController(ExamRepository examRepository, CourseRepository courseRepository, QuestionRepository questionRepository)
+        ExamService _examService;
+      
+        public ExamController(ExamService examService, CourseService courseService, QuestionService questionService)
         {
-            _examRepository = examRepository;
-            _courseRepository = courseRepository;
-            _questionRepository = questionRepository;
+            _examService = examService;
+         
         }
         [HttpPost]
         public async Task<Exam> CreateExam(int courseId)
         {
 
-            return await _examRepository.CreateExamAsync(courseId);
+            return await _examService.CreateExamAsync(courseId);
         }
         [HttpGet]
         public IEnumerable<Exam> GetCourseExams(int courseId)
         {
-            return _examRepository.GetAll().Where(x => x.CourseID == courseId);
+            return _examService.GetCourseExams(courseId);
         }
         [HttpPut]
         public async Task<bool> UpdateExamAsync(Exam exam)
         {
-            return await _examRepository.UpdateAsync(exam);
+            return await _examService.UpdateAsync(exam);
         }
         [HttpPost]
-        public async Task<bool> AddQuestionToExam(int examId, int questionId)
+        public async Task<bool> AddQuestionToExam(int examId, int questionId,int grade)
         {
-            return await _examRepository.AddQuestionToExamAsync(examId, questionId);
+            return await _examService.AddQuestionToExamAsync(examId, questionId,grade);
         }
         [HttpDelete]
         public async Task<bool> RemoveQuestionFromExam(int examId, int questionId)
         {
-            return await _examRepository.RemoveQuestionFromExamAsync(examId, questionId);
+            return await _examService.RemoveQuestionFromExamAsync(examId, questionId);
         }
         [HttpGet] 
         public async Task<Exam> GetExamById(int examId)
         {
-            return await _examRepository.GetById(examId).Result.Where(x=> x.isDeleted == false).FirstOrDefaultAsync();
+            return await _examService.GetById(examId);
         }
         [HttpGet] 
-        public async Task<IActionResult> CreateRandomExam(int couresId, int easyQuestionsCount, int mediumQuestionsCount, int hardQuestionsCount)
+        public async Task<IActionResult> CreateRandomExam(int courseId, int easyQuestionsCount, int easyGrade, int mediumQuestionsCount, int mediumGrade, int hardQuestionsCount, int hardGrade)
+        {
+            return Ok( await _examService.CreateRandomExamAsync(courseId, easyQuestionsCount,easyGrade, mediumQuestionsCount, mediumGrade, hardQuestionsCount, hardGrade));
+        }
+        
+
+        [HttpPost]
+        public bool AssignStudentToExam(int studentId, int examId)
+        {
+            return _examService.AssignStudentToExam(studentId, examId);
+        }
+        [HttpGet]
+        public decimal ViewExamResult(int examId, params int[] studentID)
         {
 
-            Course course = _courseRepository.GetById(couresId).FirstOrDefault();
-            if (course is not null)
-            {
-                Exam exam = await _examRepository.CreateExamAsync(couresId);
-                IQueryable<Question> easyQuestions = _questionRepository.GetByLevel(QuestionLevel.Easy, easyQuestionsCount);
-                IQueryable<Question> mediumQuestions = _questionRepository.GetByLevel(QuestionLevel.Medium, easyQuestionsCount);
-                IQueryable<Question> hardQuestions = _questionRepository.GetByLevel(QuestionLevel.Hard, easyQuestionsCount);
-                foreach (Question question in easyQuestions)
-                {
-                    await _examRepository.AddQuestionToExamAsync(exam.ID, question.ID);
-                }
-                foreach (Question question in mediumQuestions)
-                {
-                    await _examRepository.AddQuestionToExamAsync(exam.ID, question.ID);
-                }
-                foreach (Question question in hardQuestions)
-                {
-                    await _examRepository.AddQuestionToExamAsync(exam.ID, question.ID);
-                }
-                return Ok(exam);
-            }
-            else
-            {
-                return NotFound();
-            }
+           return  _examService.ViewExamResult(examId, studentID);
+        }
+        [HttpGet]
+        public decimal ViewBestGrad(int examId)
+        {
+
+            return _examService.ViewBestGrad(examId);
+        }
+        [HttpGet]
+        public decimal ViewAvgerageGrad(int examId)
+        {
+            return _examService.ViewAvgerageGrad(examId);
         }
 
-
-        
     }
 }

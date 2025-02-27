@@ -4,6 +4,7 @@ using ExaminationSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExaminantionSystem_R3.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250224140221_submitExam")]
+    partial class submitExam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,9 +258,6 @@ namespace ExaminantionSystem_R3.Migrations
                     b.Property<int>("CouresID")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Grade")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("StudentID")
                         .HasColumnType("int");
 
@@ -283,9 +283,6 @@ namespace ExaminantionSystem_R3.Migrations
 
                     b.Property<int>("ExamID")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("Grade")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("StudentID")
                         .HasColumnType("int");

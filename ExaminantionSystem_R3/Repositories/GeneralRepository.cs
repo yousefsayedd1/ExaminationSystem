@@ -17,11 +17,11 @@ namespace ExaminantionSystem_R3.Repositories
         }
         public IQueryable<T> GetAll()
         {
-            return _dbSet.Where(x => !x.isDeleted );
+            return _dbSet;
         }
-        public async Task<IQueryable<T>> GetById(int id)
+        public IQueryable<T> GetById(int id)
         {
-            return await  Task.Run(() => _dbSet.Where(x => x.ID == id));
+            return _dbSet.Where(x => x.ID == id);
         }
        
         public bool Add(T entity)
@@ -89,7 +89,7 @@ namespace ExaminantionSystem_R3.Repositories
 
             //}
             _dbSet.Update(entity);
-            return _context.SaveChanges() > 0;
+            return await _context.SaveChangesAsync() > 0;
 
         }
         public bool Delete(int id)
@@ -104,11 +104,16 @@ namespace ExaminantionSystem_R3.Repositories
             //entity.isDeleted = true;
             //return Update(entity, nameof(entity.isDeleted));
 
-            T q = await _dbSet.Where(x => x.ID == id).FirstOrDefaultAsync();
+            T q = await _dbSet.Where(x => x.ID == id).AsTracking().FirstOrDefaultAsync();
             q.isDeleted = true;
              _dbSet.Update(q);
             return await _context.SaveChangesAsync() > 0;
 
+        }
+
+        internal bool Add(object course)
+        {
+            throw new NotImplementedException();
         }
     }
 }

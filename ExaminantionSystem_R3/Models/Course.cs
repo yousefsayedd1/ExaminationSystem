@@ -11,6 +11,8 @@ namespace ExaminantionSystem_R3.Models
         public ICollection<Question>? questions { get; set; }
         [JsonIgnore]
         public ICollection<Exam>? Exams { get; set; }
+        [JsonIgnore]
+        public ICollection<StudentsCourses> StudentsCourses { get; set; }
 
     }
 }
