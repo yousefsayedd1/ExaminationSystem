@@ -1,4 +1,8 @@
-﻿using ExaminantionSystem_R3.Models;
+﻿using AutoMapper;
+using ExaminantionSystem_R3.DTOs;
+using ExaminantionSystem_R3.DTOs.Coureses;
+using ExaminantionSystem_R3.Mapper;
+using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,40 +14,41 @@ namespace ExaminantionSystem_R3.Services
         public CourseService(GeneralRepository<Course> courseRepo)
         {
             _courseRepo = courseRepo;
+            
         }
 
-        public IEnumerable<Course> GetAll()
+        public IEnumerable<GetCourseDTO> GetAll()
         {
-            return _courseRepo.GetAll().ToList();
+            return _courseRepo.GetAll().Project<GetCourseDTO>().ToList();
 ;
         }
-        public async Task<Course> GetByIdAsync(int id)
+        public async Task<GetCourseDTO> GetByIdAsync(int id)
         {
-            return await _courseRepo.GetById(id).FirstOrDefaultAsync();
-            ;
-        }
-
-        public bool Add(Course course)
-        {
-            return _courseRepo.Add(course);
+            return (await _courseRepo.GetById(id).FirstOrDefaultAsync()).Map<GetCourseDTO>();
             
         }
-        public async Task<bool> AddAsync(Course course)
+
+        public bool Add(AddCourseDTO course)
         {
-             return  await _courseRepo.AddAsync(course);
+            return _courseRepo.Add(course.Map<Course>());
+            
         }
-        public bool Update(Course course, params string[] modifiedProperties)
+        public async Task<bool> AddAsync(AddCourseDTO course)
         {
-           
-            return _courseRepo.Update(course);
+             return  await _courseRepo.AddAsync(course.Map<Course>());
+        }
+        public bool Update(UpdateCourseDTO course, params string[] modifiedProperties)
+        {
+            Course updatedCourse = course.Map<Course>();
+
+            return _courseRepo.Update(course.Map<Course>(), nameof(updatedCourse.Name), nameof(updatedCourse.Hours));
             
 
         }
-        public async Task<bool> UpdateAsync(Course course, params string[] modifiedProperties)
+        public async Task<bool> UpdateAsync(UpdateCourseDTO course)
         {
-
-            return await _courseRepo.UpdateAsync(course).ConfigureAwait(true);
-
+            Course updatedCourse = course.Map<Course>();
+            return await _courseRepo.UpdateAsync(updatedCourse, nameof(updatedCourse.Name), nameof(updatedCourse.Hours)).ConfigureAwait(true);
         }
         public bool Delete(int id)
         {

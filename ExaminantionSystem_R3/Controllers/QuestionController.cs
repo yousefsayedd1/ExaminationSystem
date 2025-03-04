@@ -1,4 +1,5 @@
 ﻿using ExaminantionSystem_R3.DTOs.Questions;
+using ExaminantionSystem_R3.Mapper;
 using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Repositories;
 using ExaminantionSystem_R3.Services;
@@ -26,7 +27,7 @@ namespace ExaminantionSystem_R3.Controllers
             return Ok(true);
         }
         [HttpPut]
-        public async Task<IActionResult> Update(Question question)
+        public async Task<IActionResult> Update(UpdateQuestionDTO question)
         {
             bool isUpdated = await _questionService.UpdateAsync(question)
                     .ConfigureAwait(true);
@@ -51,7 +52,7 @@ namespace ExaminantionSystem_R3.Controllers
         [HttpGet]
         public  IActionResult GetByID(int id)
         {
-            Question question = _questionService.GetByIdWithInclude(id);
+            GetQuestionWithChoicesDTO question = _questionService.GetByIdWithInclude(id);
 
             return Ok(question);
         }

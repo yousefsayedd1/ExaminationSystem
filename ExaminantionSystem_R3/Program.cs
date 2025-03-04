@@ -1,6 +1,6 @@
 
 using AutoMapper;
-using ExaminantionSystem_R3.DTOs.Questions;
+using ExaminantionSystem_R3.DTOs.Profiles;
 using ExaminantionSystem_R3.Mapper;
 using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Repositories;

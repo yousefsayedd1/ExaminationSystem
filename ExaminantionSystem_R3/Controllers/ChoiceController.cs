@@ -1,4 +1,5 @@
-﻿using ExaminantionSystem_R3.Models;
+﻿using ExaminantionSystem_R3.DTOs.Choices;
+using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Repositories;
 using ExaminantionSystem_R3.Services;
 using ExaminationSystem.Data;
@@ -20,14 +21,14 @@ namespace ExaminantionSystem_R3.Controllers
             _questionService = questionService;
         }
         [HttpPost]
-        public IActionResult Add(Choice choice)
+        public IActionResult Add(AddChoiceDTO choice)
         {
 
             return Ok(_choiceService.Add(choice));
             
         }
         [HttpPut]
-        public async Task<IActionResult> EditAsync(Choice choice)
+        public async Task<IActionResult> EditAsync(UpdateChoiceDTO choice)
         {
             return Ok( await _choiceService.UpdateAsync(choice)
                 .ConfigureAwait(true));

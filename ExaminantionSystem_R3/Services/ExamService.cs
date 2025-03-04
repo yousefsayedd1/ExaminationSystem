@@ -1,4 +1,6 @@
 ﻿using ExaminantionSystem_R3.DTOs;
+using ExaminantionSystem_R3.DTOs.Coureses;
+using ExaminantionSystem_R3.DTOs.Questions;
 using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Models.Enums;
 using ExaminantionSystem_R3.Repositories;
@@ -96,22 +98,22 @@ namespace ExaminantionSystem_R3.Services
         public async Task<Exam> CreateRandomExamAsync(int courseId, int easyQuestionsCount,int easyGrade, int mediumQuestionsCount, int mediumGrade, int hardQuestionsCount,int hardGrade)
         {
 
-            Course course = await _courseService.GetByIdAsync(courseId).ConfigureAwait(true);
+            GetCourseDTO course = await _courseService.GetByIdAsync(courseId).ConfigureAwait(true);
             if (course is not null)
             {
                 Exam exam = await CreateExamAsync(courseId);
-                IEnumerable<Question> easyQuestions = _questionService.GetByLevel(QuestionLevel.Easy, easyQuestionsCount);
-                IEnumerable<Question> mediumQuestions = _questionService.GetByLevel(QuestionLevel.Medium, easyQuestionsCount);
-                IEnumerable<Question> hardQuestions = _questionService.GetByLevel(QuestionLevel.Hard, easyQuestionsCount);
-                foreach (Question question in easyQuestions)
+                IEnumerable<GetQuestionDTO> easyQuestions = _questionService.GetByLevel(QuestionLevel.Easy, easyQuestionsCount);
+                IEnumerable<GetQuestionDTO> mediumQuestions = _questionService.GetByLevel(QuestionLevel.Medium, easyQuestionsCount);
+                IEnumerable<GetQuestionDTO> hardQuestions = _questionService.GetByLevel(QuestionLevel.Hard, easyQuestionsCount);
+                foreach (GetQuestionDTO question in easyQuestions)
                 {
                     await AddQuestionToExamAsync(exam.ID, question.ID,easyGrade);
                 }
-                foreach (Question question in mediumQuestions)
+                foreach (GetQuestionDTO question in mediumQuestions)
                 {
                     await AddQuestionToExamAsync(exam.ID, question.ID,mediumGrade);
                 }
-                foreach (Question question in hardQuestions)
+                foreach (GetQuestionDTO question in hardQuestions)
                 {
                     await AddQuestionToExamAsync(exam.ID, question.ID,hardGrade);
                 }

@@ -16,19 +16,19 @@ namespace ExaminantionSystem_R3.Services
             _questionRepo = questionRepo;
         }
 
-        public IEnumerable<Question> GetAll()
+        public IEnumerable<GetQuestionDTO> GetAll()
         {
-            return _questionRepo.GetAll();
+            return _questionRepo.GetAll().Project<GetQuestionDTO>();
         }
-        public async Task<IEnumerable<Question>> GetAllWithIncludeAsync()
+        public async Task<IEnumerable<GetQuestionWithChoicesDTO>> GetAllWithIncludeAsync()
         {
-            return await _questionRepo.GetAll()
+            return  await _questionRepo.GetAll()
                 .Include(x => x.Choices)
-                .ToListAsync();
+                .Project<GetQuestionWithChoicesDTO>().ToListAsync();
         }
-        public IEnumerable<Question> GetById(int id)
+        public GetQuestionDTO GetById(int id)
         {
-            return _questionRepo.GetById(id);
+            return _questionRepo.GetById(id).Map<GetQuestionDTO>();
         }
 
         public bool Add(AddQuestionDTO question)
@@ -36,20 +36,21 @@ namespace ExaminantionSystem_R3.Services
              
             return _questionRepo.Add(question.Map<Question>());
         }
-        public async Task<bool> AddAsync(Question question)
+        public async Task<bool> AddAsync(AddQuestionDTO question)
         {
-            return await _questionRepo.AddAsync(question);
+            return await _questionRepo.AddAsync(question.Map<Question>());
         }
-        public bool Update(Question question, params string[] modifiedProperties)
+        public bool Update(UpdateQuestionDTO question, params string[] modifiedProperties)
         {
             
-            return _questionRepo.Update(question);
+            return _questionRepo.Update(question.Map<Question>(),
+                nameof(Question.Head), nameof(Question.Level), nameof(Question.CourseID));
             
 
         }
-        public async Task<bool> UpdateAsync(Question question, params string[] modifiedProperties)
+        public async Task<bool> UpdateAsync(UpdateQuestionDTO question, params string[] modifiedProperties)
         {
-            return await _questionRepo.UpdateAsync(question);
+            return await _questionRepo.UpdateAsync(question.Map<Question>(), nameof(Question.Head), nameof(Question.Level), nameof(Question.CourseID));
 
         }
         public bool Delete(int id)
@@ -61,13 +62,13 @@ namespace ExaminantionSystem_R3.Services
             return await _questionRepo.DeleteAsync(id);
 
         }
-        public Question GetByIdWithInclude(int id)
+        public GetQuestionWithChoicesDTO GetByIdWithInclude(int id)
         {
-            return _questionRepo.GetById(id).Include(x => x.Choices).FirstOrDefault();
+            return _questionRepo.GetById(id).Include(x => x.Choices).FirstOrDefault().Map<GetQuestionWithChoicesDTO>();
         }
-        public IEnumerable<Question> GetByLevel(QuestionLevel questionLevel, int HowManyQuestions)
+        public IEnumerable<GetQuestionDTO> GetByLevel(QuestionLevel questionLevel, int HowManyQuestions)
         {
-            IEnumerable<Question> questions = _questionRepo.GetAll().Where(x => x.Level == questionLevel).OrderBy(x => Guid.NewGuid()).Take(HowManyQuestions);
+            IEnumerable<GetQuestionDTO> questions = _questionRepo.GetAll().Where(x => x.Level == questionLevel).OrderBy(x => Guid.NewGuid()).Take(HowManyQuestions).Project<GetQuestionDTO>();
             return questions;
         }
     }

@@ -1,4 +1,6 @@
-﻿using ExaminantionSystem_R3.Models;
+﻿using ExaminantionSystem_R3.DTOs;
+using ExaminantionSystem_R3.DTOs.Coureses;
+using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Repositories;
 using ExaminantionSystem_R3.Services;
 using ExaminationSystem.Data;
@@ -19,7 +21,7 @@ namespace ExaminationSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(Course course)
+        public async Task<IActionResult> Add(AddCourseDTO course)
         {
             await _courseService.AddAsync(course)
                 .ConfigureAwait(true);
@@ -36,20 +38,19 @@ namespace ExaminationSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetByID(int id)
         {
-            Course crs = await _courseService.GetByIdAsync(id);
+            GetCourseDTO crs = await _courseService.GetByIdAsync(id);
             return Ok(crs);
         }
 
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
-            
             return Ok(await _courseService.DeleteAsync(id));
         }
         [HttpPut]
-        public async Task<IActionResult> Update(Course course)
+        public async Task<IActionResult> Update(UpdateCourseDTO course)
         {   
-            return Ok(await _courseService.UpdateAsync(course,nameof(course.Name)));
+            return Ok(await _courseService.UpdateAsync(course));
         }
     }
 }

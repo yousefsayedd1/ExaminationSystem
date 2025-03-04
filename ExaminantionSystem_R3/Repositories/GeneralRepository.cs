@@ -1,6 +1,7 @@
 ﻿using ExaminantionSystem_R3.Models;
 using ExaminationSystem.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -40,26 +41,25 @@ namespace ExaminantionSystem_R3.Repositories
             {
                return false;
             }
-            //var local = _dbSet.Local.FirstOrDefault(x => x.ID == entity.ID);
-            //EntityEntry entityEntry;
-            //if (local is null)
-            //{
-            //    entityEntry = _context.Entry(entity);
-            //}
-            //else
-            //{
-            //    entityEntry = _context.ChangeTracker.Entries<T>().FirstOrDefault(x => x.Entity.ID == entity.ID);
-            //}
-            //foreach (var property in entityEntry.Properties)
-            //{
-            //    if (modifiedProperties.Contains(property.Metadata.Name))
-            //    {
-            //        property.CurrentValue = entity.GetType().GetProperty(property.Metadata.Name).GetValue(entity);
-            //        property.IsModified = true;
-            //    }
+            var local = _dbSet.Local.FirstOrDefault(x => x.ID == entity.ID);
+            EntityEntry entityEntry;
+            if (local is null)
+            {
+                entityEntry = _context.Entry(entity);
+            }
+            else
+            {
+                entityEntry = _context.ChangeTracker.Entries<T>().FirstOrDefault(x => x.Entity.ID == entity.ID);
+            }
+            foreach (var property in entityEntry.Properties)
+            {
+                if (modifiedProperties.Contains(property.Metadata.Name))
+                {
+                    property.CurrentValue = entity.GetType().GetProperty(property.Metadata.Name).GetValue(entity);
+                    property.IsModified = true;
+                }
 
-            //}
-            _dbSet.Update(entity);
+            }
             return _context.SaveChanges() > 0;
 
         }
@@ -69,26 +69,25 @@ namespace ExaminantionSystem_R3.Repositories
             {
                 return false;
             }
-            //var local = _dbSet.Local.FirstOrDefault(x => x.ID == entity.ID);
-            //EntityEntry entityEntry;
-            //if (local is null)
-            //{
-            //    entityEntry = _context.Entry(entity);
-            //}
-            //else
-            //{
-            //    entityEntry = _context.ChangeTracker.Entries<T>().FirstOrDefault(x => x.Entity.ID == entity.ID);
-            //}
-            //foreach (var property in entityEntry.Properties)
-            //{
-            //    if (modifiedProperties.Contains(property.Metadata.Name))
-            //    {
-            //        property.CurrentValue = entity.GetType().GetProperty(property.Metadata.Name).GetValue(entity);
-            //        property.IsModified = true;
-            //    }
+            var local = _dbSet.Local.FirstOrDefault(x => x.ID == entity.ID);
+            EntityEntry entityEntry;
+            if (local is null)
+            {
+                entityEntry = _context.Entry(entity);
+            }
+            else
+            {
+                entityEntry = _context.ChangeTracker.Entries<T>().FirstOrDefault(x => x.Entity.ID == entity.ID);
+            }
+            foreach (var property in entityEntry.Properties)
+            {
+                if (modifiedProperties.Contains(property.Metadata.Name))
+                {
+                    property.CurrentValue = entity.GetType().GetProperty(property.Metadata.Name).GetValue(entity);
+                    property.IsModified = true;
+                }
 
-            //}
-            _dbSet.Update(entity);
+            }
             return await _context.SaveChangesAsync() > 0;
 
         }
@@ -100,13 +99,13 @@ namespace ExaminantionSystem_R3.Repositories
         }
         public async Task<bool> DeleteAsync(int id)
         {
-            //T entity = new T() { ID = id };
-            //entity.isDeleted = true;
-            //return Update(entity, nameof(entity.isDeleted));
+            T entity = new T() { ID = id };
+            entity.isDeleted = true;
+            return Update(entity, nameof(entity.isDeleted));
 
-            T q = await _dbSet.Where(x => x.ID == id).AsTracking().FirstOrDefaultAsync();
-            q.isDeleted = true;
-             _dbSet.Update(q);
+            //T q = await _dbSet.Where(x => x.ID == id).AsTracking().FirstOrDefaultAsync();
+            //q.isDeleted = true;
+            // _dbSet.Update(q);
             return await _context.SaveChangesAsync() > 0;
 
         }
