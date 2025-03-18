@@ -9,13 +9,10 @@ namespace ExaminantionSystem_R3.Models
         public int DurationInMinutes { get; set; }
         public ExamType Type { get; set; }
         public int CourseID { get; set; }
-        [JsonIgnore]
         public Course Course { get; set; }
+        public int InstructorID { get; set; }
         public Instructor Instructor { get; set; }
-        [JsonIgnore]
-
         public ICollection<ExamQuestion> ExamQuestions { get; set; }
-        [JsonIgnore]
         public ICollection<StudentsExams> StudentsExams { get; set; }
 
     }

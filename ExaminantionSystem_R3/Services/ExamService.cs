@@ -1,6 +1,8 @@
 ﻿using ExaminantionSystem_R3.DTOs;
 using ExaminantionSystem_R3.DTOs.Coureses;
+using ExaminantionSystem_R3.DTOs.ExamQuestion;
 using ExaminantionSystem_R3.DTOs.Questions;
+using ExaminantionSystem_R3.Mapper;
 using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Models.Enums;
 using ExaminantionSystem_R3.Repositories;
@@ -27,36 +29,36 @@ namespace ExaminantionSystem_R3.Services
             _courseService = courseService;
         }
 
-        public IEnumerable<Exam> GetAll()
+        public IEnumerable<GetAllExamsDTO> GetAll()
         {
-            return _examRepo.GetAll().ToList();
+            return _examRepo.GetAll().Project<GetAllExamsDTO>().ToList();
         }
-        public async Task<Exam> GetById(int id)
+        public async Task<GetbyidExamDTO> GetById(int id)
         {
-            return await _examRepo.GetById(id).FirstOrDefaultAsync();
+            return await _examRepo.GetById(id).Project<GetbyidExamDTO>().FirstOrDefaultAsync();
             ;
         }
 
-        public bool Add(Exam exam)
+        public bool Add(AddExamDTO exam)
         {
             return _examRepo.Add(exam);
 
         }
-        public async Task<bool> AddAsync(Exam exam)
+        public async Task<bool> AddAsync(AddExamDTO exam)
         {
-            return await _examRepo.AddAsync(exam);
+            return await _examRepo.AddAsync(exam.Map<Exam>());
         }
-        public bool Update(Exam exam, params string[] modifiedProperties)
+        public bool Update(UpdateExamDTO exam, params string[] modifiedProperties)
         {
 
-            return _examRepo.Update(exam);
+            return _examRepo.Update(exam.Map<Exam>());
 
 
         }
-        public async Task<bool> UpdateAsync(Exam exam, params string[] modifiedProperties)
+        public async Task<bool> UpdateAsync(UpdateExamDTO exam, params string[] modifiedProperties)
         {
 
-            return await _examRepo.UpdateAsync(exam).ConfigureAwait(true);
+            return await _examRepo.UpdateAsync(exam.Map<Exam>()).ConfigureAwait(true);
 
         }
         public bool Delete(int id)
@@ -75,7 +77,7 @@ namespace ExaminantionSystem_R3.Services
             bool question = _questionService.GetAll().Any(x => x.ID == questionId);
             if (exam && question)
             {
-                return _examQuestionService.Add(new ExamQuestion() { ExamID = examId, QuestionID = questionId, Grade = grade });
+                return _examQuestionService.Add(new AddExamQuestionDTO() { ExamID = examId, QuestionID = questionId, Grade = grade });
             }
             return false;
         }
@@ -84,18 +86,18 @@ namespace ExaminantionSystem_R3.Services
             return await _examQuestionService.RemoveQuestionFromExamAsync(examId, questionId);
 
         }
-        public async Task<Exam> CreateExamAsync(int courseId)
+        public async Task<CreateExamDTO> CreateExamAsync(int courseId)
         {
             Exam exam = new Exam() { CourseID = courseId };
             bool examAdded = await _examRepo.AddAsync(exam);
-            if(examAdded) return exam;
+            if(examAdded) return exam.Map<CreateExamDTO>();
             return null;
         }
-        public IEnumerable<Exam> GetCourseExams(int courseId)
+        public IEnumerable<GetCourseExamDTO> GetCourseExams(int courseId)
         {
-            return _examRepo.GetAll().Where(x => x.CourseID == courseId);
+            return _examRepo.GetAll().Where(x => x.CourseID == courseId).Project<GetCourseExamDTO>();
         }
-        public async Task<Exam> CreateRandomExamAsync(int courseId, int easyQuestionsCount,int easyGrade, int mediumQuestionsCount, int mediumGrade, int hardQuestionsCount,int hardGrade)
+        public async Task<CreateRandomExamDTO> CreateRandomExamAsync(int courseId, int easyQuestionsCount,int easyGrade, int mediumQuestionsCount, int mediumGrade, int hardQuestionsCount,int hardGrade)
         {
 
             GetCourseDTO course = await _courseService.GetByIdAsync(courseId).ConfigureAwait(true);

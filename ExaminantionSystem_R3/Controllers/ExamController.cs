@@ -76,7 +76,7 @@ namespace ExaminantionSystem_R3.Controllers
             return _examService.ViewBestGrad(examId);
         }
         [HttpGet]
-        public decimal ViewAvgerageGrad(int examId)
+        public decimal ViewAverageGrad(int examId)
         {
             return _examService.ViewAvgerageGrad(examId);
         }

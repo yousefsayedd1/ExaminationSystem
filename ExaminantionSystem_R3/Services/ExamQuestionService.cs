@@ -1,8 +1,9 @@
-﻿using ExaminantionSystem_R3.Models;
+﻿using ExaminantionSystem_R3.DTOs.ExamQuestion;
+using ExaminantionSystem_R3.Mapper;
+using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using System.Threading.Tasks;
+
 
 namespace ExaminantionSystem_R3.Services
 {
@@ -14,37 +15,37 @@ namespace ExaminantionSystem_R3.Services
             _examQuestionRepo = examQuestionRepo;
         }
 
-        public IEnumerable<ExamQuestion> GetAll()
+        public IEnumerable<GetAllExamQuestionDTO> GetAll()
         {
-            return _examQuestionRepo.GetAll().ToList();
+            return _examQuestionRepo.GetAll().Project<GetAllExamQuestionDTO>().ToList();
+            
+        }
+        public async Task<GetByIdExamQuestionDTO> GetById(int id)
+        {
+            return (await _examQuestionRepo.GetById(id).FirstOrDefaultAsync()).Map<GetByIdExamQuestionDTO>();
             ;
         }
-        public async Task<ExamQuestion> GetById(int id)
-        {
-            return await _examQuestionRepo.GetById(id).FirstOrDefaultAsync();
-            ;
-        }
 
-        public bool Add(ExamQuestion examQuestion)
+        public bool Add(AddExamQuestionDTO examQuestion)
         {
-            return _examQuestionRepo.Add(examQuestion);
+            return _examQuestionRepo.Add(examQuestion.Map<ExamQuestion>());
 
         }
-        public async Task<bool> AddAsync(ExamQuestion examQuestion)
+        public async Task<bool> AddAsync(AddExamQuestionDTO examQuestion)
         {
-            return await _examQuestionRepo.AddAsync(examQuestion);
+            return await _examQuestionRepo.AddAsync(examQuestion.Map<ExamQuestion>());
         }
-        public bool Update(ExamQuestion examQuestion, params string[] modifiedProperties)
+        public bool Update(UpdateExamQuestionDTO examQuestion, params string[] modifiedProperties)
         {
 
-            return _examQuestionRepo.Update(examQuestion);
+            return _examQuestionRepo.Update(examQuestion.Map<ExamQuestion>(),nameof(ExamQuestion.ExamID), nameof(ExamQuestion.QuestionID), nameof(ExamQuestion.Grade));
 
 
         }
-        public async Task<bool> UpdateAsync(ExamQuestion examQuestion, params string[] modifiedProperties)
+        public async Task<bool> UpdateAsync(UpdateExamQuestionDTO examQuestion, params string[] modifiedProperties)
         {
 
-            return await _examQuestionRepo.UpdateAsync(examQuestion).ConfigureAwait(true);
+            return await _examQuestionRepo.UpdateAsync(examQuestion.Map<ExamQuestion>(), nameof(ExamQuestion.ExamID), nameof(ExamQuestion.QuestionID), nameof(ExamQuestion.Grade)).ConfigureAwait(true);
 
         }
         public async Task<bool> RemoveQuestionFromExamAsync(int examId, int questionId)
