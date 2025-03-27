@@ -3,6 +3,7 @@ using ExaminantionSystem_R3.DTOs.Coureses;
 using ExaminantionSystem_R3.DTOs.ExamQuestion;
 using ExaminantionSystem_R3.DTOs.Exams;
 using ExaminantionSystem_R3.DTOs.Questions;
+using ExaminantionSystem_R3.DTOs.StudentAnswer;
 using ExaminantionSystem_R3.DTOs.StudentsExams;
 using ExaminantionSystem_R3.Mapper;
 using ExaminantionSystem_R3.Models;
@@ -22,6 +23,7 @@ namespace ExaminantionSystem_R3.Services
         public readonly CourseService _courseService;
         public readonly StudentService _studentService;
         public readonly StudentsExamsService _studentsExamsService;
+        public readonly StudentAnswersService _StudentAnswersService;
         
         // technical debt
         public Context _context { get; set; } = new();
@@ -41,7 +43,7 @@ namespace ExaminantionSystem_R3.Services
         public async Task<GetbyidExamDTO> GetById(int id)
         {
             return await _examRepo.GetById(id).Project<GetbyidExamDTO>().FirstOrDefaultAsync();
-            ;
+            
         }
 
         public bool Add(AddExamDTO exam)
@@ -141,21 +143,21 @@ namespace ExaminantionSystem_R3.Services
         }
         //technical debt 
 
-        public bool SubmitExam(SumbitExamDTO submitExamDTO)
+        public bool SubmitExam(SubmitExamDTO submitExamDTO)
         {
             int studentID= -1;
             int examID = -1; 
-            foreach (StudentAnswer studentAnswer in submitExamDTO.StudentAnswers)
+            foreach (StudentAnswerDTO studentAnswer in submitExamDTO.StudentAnswers)
             {
-                _context.StudentAnswers.Add(studentAnswer);
+                _StudentAnswersService.Add(studentAnswer);
                 studentID = studentAnswer.StudentID;
                 examID = studentAnswer.ExamID;
             }
             if (studentID > -1 && examID > -1)
             {
                 decimal grade = ViewExamResult(examID, studentID);
-                StudentsExams studentsExams = new() { StudentID = studentID, ExamID = examID, Grade = grade };
-                StudentsCourses studentsCourses = new() { StudentID = studentID, CouresID = _context.Exams.FirstOrDefault(x => x.ID == examID).CourseID, Grade = grade };
+                AddStudentsExamsDTO studentsExams = new() { StudentID = studentID, ExamID = examID, Grade = grade };
+                AddStudentsCoursesDTO studentsCourses = new() { StudentID = studentID, CourseID = _examRepo.GetById(examID).FirstOrDefault().CourseID, Grade = grade };
                 _context.StudentsCourses.Add(studentsCourses);
                 _context.StudentsExams.Add(studentsExams);
             }
