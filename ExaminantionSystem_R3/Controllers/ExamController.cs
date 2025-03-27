@@ -1,4 +1,5 @@
-﻿using ExaminantionSystem_R3.Models;
+﻿using ExaminantionSystem_R3.DTOs.Exams;
+using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Models.Enums;
 using ExaminantionSystem_R3.Repositories;
 using ExaminantionSystem_R3.Services;
@@ -21,18 +22,18 @@ namespace ExaminantionSystem_R3.Controllers
          
         }
         [HttpPost]
-        public async Task<Exam> CreateExam(int courseId)
+        public async Task<CreateExamDTO> CreateExam(int courseId)
         {
 
             return await _examService.CreateExamAsync(courseId);
         }
         [HttpGet]
-        public IEnumerable<Exam> GetCourseExams(int courseId)
+        public IEnumerable<GetCourseExamDTO> GetCourseExams(int courseId)
         {
             return _examService.GetCourseExams(courseId);
         }
         [HttpPut]
-        public async Task<bool> UpdateExamAsync(Exam exam)
+        public async Task<bool> UpdateExamAsync(UpdateExamDTO exam)
         {
             return await _examService.UpdateAsync(exam);
         }
@@ -47,14 +48,14 @@ namespace ExaminantionSystem_R3.Controllers
             return await _examService.RemoveQuestionFromExamAsync(examId, questionId);
         }
         [HttpGet] 
-        public async Task<Exam> GetExamById(int examId)
+        public async Task<GetbyidExamDTO> GetExamById(int examId)
         {
             return await _examService.GetById(examId);
         }
         [HttpGet] 
-        public async Task<IActionResult> CreateRandomExam(int courseId, int easyQuestionsCount, int easyGrade, int mediumQuestionsCount, int mediumGrade, int hardQuestionsCount, int hardGrade)
+        public async Task<CreateRandomExamDTO> CreateRandomExam(int courseId, int easyQuestionsCount, int easyGrade, int mediumQuestionsCount, int mediumGrade, int hardQuestionsCount, int hardGrade)
         {
-            return Ok( await _examService.CreateRandomExamAsync(courseId, easyQuestionsCount,easyGrade, mediumQuestionsCount, mediumGrade, hardQuestionsCount, hardGrade));
+            return await _examService.CreateRandomExamAsync(courseId, easyQuestionsCount,easyGrade, mediumQuestionsCount, mediumGrade, hardQuestionsCount, hardGrade);
         }
         
 

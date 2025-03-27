@@ -1,7 +1,9 @@
 ﻿using ExaminantionSystem_R3.DTOs;
 using ExaminantionSystem_R3.DTOs.Coureses;
 using ExaminantionSystem_R3.DTOs.ExamQuestion;
+using ExaminantionSystem_R3.DTOs.Exams;
 using ExaminantionSystem_R3.DTOs.Questions;
+using ExaminantionSystem_R3.DTOs.StudentsExams;
 using ExaminantionSystem_R3.Mapper;
 using ExaminantionSystem_R3.Models;
 using ExaminantionSystem_R3.Models.Enums;
@@ -18,6 +20,9 @@ namespace ExaminantionSystem_R3.Services
         public readonly ExamQuestionService _examQuestionService;
         public readonly QuestionService _questionService;
         public readonly CourseService _courseService;
+        public readonly StudentService _studentService;
+        public readonly StudentsExamsService _studentsExamsService;
+        
         // technical debt
         public Context _context { get; set; } = new();
         
@@ -103,7 +108,7 @@ namespace ExaminantionSystem_R3.Services
             GetCourseDTO course = await _courseService.GetByIdAsync(courseId).ConfigureAwait(true);
             if (course is not null)
             {
-                Exam exam = await CreateExamAsync(courseId);
+                CreateExamDTO exam = await CreateExamAsync(courseId);
                 IEnumerable<GetQuestionDTO> easyQuestions = _questionService.GetByLevel(QuestionLevel.Easy, easyQuestionsCount);
                 IEnumerable<GetQuestionDTO> mediumQuestions = _questionService.GetByLevel(QuestionLevel.Medium, easyQuestionsCount);
                 IEnumerable<GetQuestionDTO> hardQuestions = _questionService.GetByLevel(QuestionLevel.Hard, easyQuestionsCount);
@@ -119,19 +124,18 @@ namespace ExaminantionSystem_R3.Services
                 {
                     await AddQuestionToExamAsync(exam.ID, question.ID,hardGrade);
                 }
-                return exam;
+                return exam.Map<CreateRandomExamDTO>();
             }
             return null;
         }
-        //technical debt
         public bool AssignStudentToExam(int studentId, int examId)
         {
-            var studentExists = _context.Students.Any(s => s.ID == studentId);
-            bool examExists = _context.Exams.Any(e => e.ID == examId);
+            var studentExists = _studentService.GetAll().Any(s => s.ID == studentId);
+            bool examExists = _examRepo.GetAll().Any(e => e.ID == examId);
             if (studentExists && examExists)
             {
-                StudentsExams studentsExams = new StudentsExams() { StudentID = studentId, ExamID = examId };
-                _context.StudentsExams.Add(studentsExams);
+                AddStudentsExamsDTO studentsExams = new() { StudentID = studentId, ExamID = examId };
+                _studentsExamsService.Add(studentsExams);
             }
             return false;
         }

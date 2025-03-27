@@ -1,4 +1,4 @@
-﻿namespace ExaminantionSystem_R3.Services
+﻿namespace ExaminantionSystem_R3.DTOs.Exams
 {
     public class CreateExamDTO
     {

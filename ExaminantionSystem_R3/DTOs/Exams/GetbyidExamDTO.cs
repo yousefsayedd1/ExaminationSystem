@@ -1,9 +1,9 @@
-﻿using ExaminantionSystem_R3.Models;
-using ExaminantionSystem_R3.Models.Enums;
+﻿using ExaminantionSystem_R3.Models.Enums;
+using ExaminantionSystem_R3.Models;
 
-namespace ExaminantionSystem_R3.Services
+namespace ExaminantionSystem_R3.DTOs.Exams
 {
-    public class GetAllExamsDTO
+    public class GetbyidExamDTO
     {
         public int ID { get; set; }
         public DateTime Date { get; set; }
